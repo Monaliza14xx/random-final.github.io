@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html data-theme="forest" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random</title>
+    <style>
+      /* middle screen  id center */
+      #center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      /* Lao font */
+      @font-face {
+        font-family: "Noto Sans Lao Looped";
+        src: url("https://fonts.gstatic.com/ea/notosanslao/v1/NotoSansLaoLooped-Regular.woff2")
+            format("woff2"),
+          url("https://fonts.gstatic.com/ea/notosanslao/v1/NotoSansLaoLooped-Regular.woff")
+            format("woff");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      /* Lao font */
+      .text-lao {
+        font-family: "Noto Sans Lao Looped", sans-serif;
+      }
+    </style>
+
+    <!-- Tailwind CSS via CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@4.6.2/dist/full.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- htmx Library -->
+    <script src="https://unpkg.com/htmx.org@1.6.0/dist/htmx.min.js"></script>
+
+    <!-- Sweetalert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      //   create array of questions
+      let action = false;
+
+      const questions = [
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອເປີດ-ປິດ ດອກໄຟດ້ວຍການກວດຈັບການເຄື່ອນໄຫວ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອສະແດງໄລຍະຜ່ານດອກໄຟ ຢູ່ໃກ້ສີຂຽວ ຢູ່ໄກສີແດງ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອສະແດງໄລຍະຜ່ານດອກໄຟ ຢູ່ໃກ້ສີແດງ ຢູ່ໄກສີຂຽວ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອສະແດງໄລຍະຜ່ານດອກໄຟ ຢູ່ໃກ້ສີແດງ ຢູ່ກາງສີສົ້ມ ຢູ່ໄກສີຂຽວ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອສະແດງໄລຍະຜ່ານດອກໄຟ ຢູ່ໃກ້ສີຂຽວ ຢູ່ກາງສີສົ້ມ ຢູ່ໄກສີແດງ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອເປີດ-ປິດ ດອກໄຟດ້ວຍການກົດປຸ່ມ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອເປີດດອກໄຟໃຫ້ຮຸ່ງຄ້າງໄວ້ດ້ວຍການກົດປຸ່ມ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອປິດດອກໄຟທີ່ຮຸ່ງຄ້າງຢູ່ດ້ວຍການກົດປຸ່ມ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອເປີດ-ປິດ ດອກໄຟດ້ວຍການໝຸນຂອງ Servo ເມື່ອຮອດ 180",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອໃຫ້ດອກໄຟ 4ດອກກະພິບ",
+          "ໃຫ້ຕໍ່ວົງຈອນເພື່ອໃຫ້ດອກໄຟຮຸ່ງຕາມລຳດັບ 5ດອກຄື: ສີແດງ,ສົ້ມ,ເຫຼືອງ,ຂຽວ,ຟ້າ",
+          "ໃຫ້ຈໍ່ວົງຈອນດອກໄຟ ຂຽວ-ເຫຼືອງ-ແດງ ຈາກນັ້ນກົດປຸ່ມເພື່ອໃຫ້ດອກໄຟຮຸ່ງຕາມລຳດັບ",
+          "ໃຫ້ຕໍ່ວົງຈອນດອກ LED  5ດອກຄື: ສີແດງ,ສົ້ມ,ເຫຼືອງ,ຂຽວ,ຟ້າ ກວດສອບລະດັບນ້ຳ",
+          "ຈົ່ງຕໍ່ວົງຈອນເພື່ອສະແດງລຳດັບຂອງຕົວເອງ (7segments)",
+          "ໃຫ້ຕໍ່ດອກໄຟ10ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງແຕ່ຂວາຫາຊ້າຍ",
+          "ໃຫ້ຕໍ່ດອກໄຟ10ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງແຕ່ຊ້າຍຫາຂວາ",
+          "ໃຫ້ຕໍ່ດອກໄຟ6ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງ-ດັບແຕ່ຊ້າຍຫາຂວາ",
+          "ໃຫ້ຕໍ່ດອກໄຟ6ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງ-ດັບແຕ່ຂວາຫາຊ້າຍ",
+          "ຕໍ່ວົງຈອນການຄວບຄຸມດອກໄຟ 6ດອກໃຫ້ຮຸ່ງແຕ່ ຊ້າຍຫາຂວາ",
+          "ຕໍ່ວົງຈອນການຄວບຄຸມດອກໄຟ 6ດອກໃຫ້ຮຸ່ງແຕ່ ຂວາຫາຊ້າຍ",
+          "ຕໍ່ດອກໄຟ6ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງ 2ດອກທາງກາງ",
+          "ຕໍ່ດອກໄຟ6ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງ 2ດອກທາງນອກ",
+          "ຕໍ່ດອກໄຟ6ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງ ສະເພາະເລກຄີກ",
+          "ຕໍ່ດອກໄຟ6ດອກ ຫຼັງຈາກນັ້ນກົດປຸ່ມໃຫ້ຮຸ່ງ ສະເພາະເລກຄູ່",
+        ],
+        //   get random question
+        getRandomQuestion = () => {
+          action = true;
+          const randomIndex = Math.floor(Math.random() * questions.length);
+          Swal.fire({
+            title: questions[randomIndex],
+            showDenyButton: true,
+            icon: "question",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#22E55E",
+            denyButtonText: `Again!`,
+            denyButtonColor: "#FF3D00",
+            allowOutsideClick: false,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              document.getElementById("question").value =
+                questions[randomIndex];
+              // submit form
+              document.getElementById("submit").click();
+
+              document
+                .getElementById("form")
+                .addEventListener("htmx:afterSwap", (event) => {
+                  if (event.detail.xhr.status === 201) {
+                    // sweetalert2 cannot click outside to close
+                    Swal.fire({
+                      title: "ໂຊກດີ!",
+                      text: "ບັນທຶກສຳເລັດແລ້ວ!",
+                      icon: "success",
+                      confirmButtonText: "OK",
+                      allowOutsideClick: false,
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        location.reload();
+                      }
+                    });
+                  } else {
+                    Swal.fire({
+                      title: "Error",
+                      text: "Question has not been submitted",
+                      icon: "error",
+                      confirmButtonText: "OK",
+                    });
+                  }
+                });
+
+                // if action is true id random-btn is disabled
+            if (action) {
+              document.getElementById("random-btn").disabled = true;
+              //   and <span class="loading loading-ball loading-xs"></span>
+              document.getElementById("random-btn").innerHTML =
+                "<span class='loading loading-ball loading-xs'></span>";
+            } else {
+              document.getElementById("random-btn").disabled = false;
+              document.getElementById("random-btn").innerHTML =
+                "Random Question";
+            }
+
+            } else if (result.isDenied) {
+              getRandomQuestion();
+            }
+          
+          });
+        };
+      //
+    </script>
+  </head>
+  <body>
+    <div id="center">
+      <div class="card w-96 mx-auto bg-white p-8 rounded-md shadow-md">
+        <h1 class="text-2xl text-gray-700 font-semibold mb-4">
+          Random Question
+        </h1>
+        <!-- Submit form that includes no, class, question -->
+        <form
+          hx-post="https://sheetdb.io/api/v1/thyq00qz7bh4r"
+          hx-target="#form"
+          hx-swap="innerHTML"
+        >
+          <div class="mb-4">
+            <label for="no" class="block text-sm font-medium text-gray-700"
+              >No</label
+            >
+            <select
+              name="no"
+              id="no"
+              required
+              class="border-gray-300 border-2 rounded-md p-4 w-full"
+            >
+              <option value="">Select No</option>
+            </select>
+          </div>
+          <script>
+            // Select the dropdown element
+            var selectNo = document.getElementById("no");
+
+            // Loop from 1 to 40 to generate options
+            for (var i = 1; i <= 60; i++) {
+              // Create an option element
+              var option = document.createElement("option");
+              // Set the value and text of the option
+              option.value = i;
+              option.textContent = i;
+              // Append the option to the dropdown
+              selectNo.appendChild(option);
+            }
+          </script>
+
+          <div class="mb-4">
+            <label for="class" class="block text-sm font-medium text-gray-700"
+              >Class</label
+            >
+            <select
+              name="class"
+              id="class"
+              required
+              class="border-gray-300 border-2 rounded-md p-4 w-full"
+            >
+              <option value="">Select Class</option>
+              <option value="3COM1">3COM1</option>
+              <option value="3COM2">3COM2</option>
+            </select>
+          </div>
+          <div class="mb-4 hidden">
+            <label
+              for="question"
+              class="block text-sm font-medium text-gray-700"
+              >Question</label
+            >
+            <input
+              type="text"
+              name="question"
+              id="question"
+              placeholder="Question"
+              required
+              class="border-gray-300 border-2 rounded-md w-full"
+            />
+          </div>
+          <!-- Create random btn -->
+          <button
+            id="random-btn"
+            type="button"
+            class="bg-green-500 w-full text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+            onclick="document.getElementById('question').value = getRandomQuestion()"
+          >
+            Random Question
+          </button>
+          <button
+            type="submit"
+            class="hidden bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+            id="submit"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+      <div id="form" class="mt-8 hidden"></div>
+    </div>
+  </body>
+</html>
